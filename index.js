@@ -50,7 +50,7 @@ function splitDays(obj){
 			end: tempEndDate
 		},
 			splitDays(
-				JSON.parse(`{"${options.beginKey}":${tempEndDate.getTime()+1},"${options.endKey}":${obj[options.endKey]}}`)
+				{[`${options.beginKey}`]:parseInt(`${tempEndDate.getTime()+1}`),[`${options.endKey}`]:parseInt(`${obj[options.endKey]}`)}
 			)
 		].flat();
 	}
