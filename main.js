@@ -5,7 +5,6 @@ const options={
     }
 
 
-//ToDo должен вернуть обьект для построение диаграммы. а не только даты.
 ///Returns timeslots divided by days
 function splitDays(obj){
     const beginDate= new Date(obj[options.beginKey]);
@@ -32,56 +31,18 @@ function splitDays(obj){
     }
 }
 
+///Detect collision by Combination of two.
 function detectCollision(data){
-console.log(data);
-    let buffer=data.slice();
-    let a;
-    let i=0;
-    //проверка на коллизии. через перебор сочетаний по два. 
-    while (buffer.length>0){
-        a=buffer.shift();
-        buffer.forEach(b=>{
-            //ох щас как напиздячу условий
-            //ToDo свернуть условие
-            switch (true){
-                case (    (a[options.beginKey]<b[options.beginKey])&&
-                        (a[options.endKey]>b[options.endKey])&&
-                        (a[options.beginKey]<b[options.endKey])&&
-                        (b[options.beginKey]<a[options.beginKey])): console.log("Collission detected!  Элемент ",i+buffer.indexOf(b)+1," полностью включен в элемент ",i);
-                        break;
-                case (    (a[options.beginKey]>b[options.beginKey])&&
-                        (a[options.endKey]<b[options.endKey]) &&
-                        (a[options.beginKey]<b[options.endKey]) &&
-                        (b[options.beginKey]<a[options.endKey])) : console.log("2Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-                        break;
-                case (    (a[options.endKey]==b[options.endKey]) &&
-                        (a[options.beginKey]<b[options.endKey]) &&
-                        (b[options.beginKey]<a[options.endKey]) ) : console.log("3Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-                        break;
-                case (  (a[options.beginKey]<b[options.endKey])&&
-                        (a[options.endKey]>b[options.beginKey]) &&
-                        (a[options.beginKey]<b[options.endKey]) &&
-                        (b[options.beginKey]<a[options.endKey]) ): console.log("4Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-                        break;
-                case (    (a[options.beginKey]==b[options.beginKey])&&
-                        (a[options.endKey]==b[options.endKey]) ): console.log("Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-                        break;
-                case (    (a[options.beginKey]==b[options.beginKey])&&
-                        (a[options.beginKey]<b[options.endKey]) &&
-                        (b[options.beginKey]<a[options.endKey])) : console.log("Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-                        break;
-                case (    (a[options.beginKey]<b[options.beginKey])&&
-                        (a[options.endKey]<b[options.endKey]) &&
-                        (a[options.beginKey]<b[options.endKey]) &&
-                        (b[options.beginKey]<a[options.endKey]) ): console.log("Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-                        break;
-                default: //console.log()
-                }
-                
-
-        });
-        i++;
-    }
+	let buffer=data.slice();
+	let A;
+	let i=0;
+	while (buffer.length>0){
+		A=buffer.shift();
+		buffer.forEach(B=>{
+			(!(A[options.beginKey]<B[options.endKey])&&(A[options.endKey]>B[options.beginKey]))?console.log("Detect collision beetween ",i," and ",i+buffer.indexOf(B)+1):null;
+    });
+    i++;
+	}
 }
 
 
