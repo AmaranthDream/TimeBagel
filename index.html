@@ -1,241 +1,39 @@
- <style type="text/css">
-	.arc {
-	fill:green;
-	}
-	.arc:hover{
-	stroke: red;
-	stroke-width:10;
-	}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>HTML5</title>
+  <!--[if IE]>
+   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <script src="https://github.com/AmaranthDream/TimeBagel/blob/master/main.js"></script>
+  <style>
+    article,
+    aside,
+    details,
+    figcaption,
+    figure,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    section {
+      display: block;
+    }
   </style>
-<svg viewBox="0 0 600 600" width="400" height="400">
-	<path class="arc" id="arc"   fill-rule="evenodd">  </path>
-	<path id="arc2" fill="blue" stroke="none" fill-rule="evenodd" />
-</svg>
+</head>
 
-<pre id="arc_d_attr"></pre>
+<body>
+  <script type="text/javascript">
+    const randomDateArray=[];
+    const bufDate=new Date();
+    for(let i=0;i<20;i++){
+    	randomDateArray.push({"begin":bufDate.setMilliseconds(Math.round(Math.random()*28800000)),"end":bufDate.setMilliseconds(Math.round(Math.random()*28800000))});
+    }
+    console.log(b=remold(randomDateArray));
+  </script>
+</body>
 
-<script>
-
-/*
-1 сутки
-24 часа
-1440 минут
-8640 секунд
-8640000 миллисекунд
-
-1 мс = 0.00004166666 градусов
-1 градус = 24000 мс
-
-*/
-
-//опции 
-const options={
-		beginKey:"begin",
-		endKey:"end"
-	}
-
-let TimeData=[{
-	begin:1555611441000,
-	end:1555618641000
-	},{
-	begin:1555277652000,
-	end:1555285632000
-	},
-	{"dfd":1,
-	"begin":13232},
-	{
-	begin:1555682671000,
-	end:1555689870000
-	},
-	{
-	begin:1555787070000,
-	end:1556819470000
-	}
-	
-]
-
-let splitTest={
-	begin:1555773103000,
-	end:1556039503000
-}
-
-
-//ToDo должен вернуть обьект для построение диаграммы. а не только даты.
-function splitDays(obj){
-	const beginDate= new Date(obj[options.beginKey]);
-	const endDate= new Date(obj[options.endKey]);
-	if (beginDate.toDateString()==endDate.toDateString()){
-	return 	{
-				begin:beginDate,
-				end:endDate
-			}
-	}else{
-		const tempEndDate=new Date(beginDate);
-		tempEndDate.setHours(23);
-		tempEndDate.setMinutes(59);
-		tempEndDate.setSeconds(59);
-		tempEndDate.setMilliseconds(999);
-		return [{
-			begin:beginDate,
-			end: tempEndDate
-		},
-			splitDays(
-				{[`${options.beginKey}`]:parseInt(`${tempEndDate.getTime()+1}`),[`${options.endKey}`]:parseInt(`${obj[options.endKey]}`)}
-			)
-		].flat();
-	}
-}
-
-function detectCollision(data){
-console.log(data);
-	let buffer=data.slice();
-	let a;
-	let i=0;
-	//проверка на коллизии. через перебор сочетаний по два. 
-	while (buffer.length>0){
-		a=buffer.shift();
-		buffer.forEach(b=>{
-			//ох щас как напиздячу условий
-			//ToDo свернуть условие
-			switch (true){
-				case (	(a[options.beginKey]<b[options.beginKey])&&
-						(a[options.endKey]>b[options.endKey])&&
-						(a[options.beginKey]<b[options.endKey])&&
-						(b[options.beginKey]<a[options.beginKey])): console.log("Collission detected!  Элемент ",i+buffer.indexOf(b)+1," полностью включен в элемент ",i);
-						break;
-				case (	(a[options.beginKey]>b[options.beginKey])&&
-						(a[options.endKey]<b[options.endKey]) &&
-						(a[options.beginKey]<b[options.endKey]) &&
-						(b[options.beginKey]<a[options.endKey])) : console.log("2Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-						break;
-				case (	(a[options.endKey]==b[options.endKey]) &&
-						(a[options.beginKey]<b[options.endKey]) &&
-						(b[options.beginKey]<a[options.endKey]) ) : console.log("3Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-						break;
-				case (  (a[options.beginKey]<b[options.endKey])&&
-						(a[options.endKey]>b[options.beginKey]) &&
-						(a[options.beginKey]<b[options.endKey]) &&
-						(b[options.beginKey]<a[options.endKey]) ): console.log("4Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-						break;
-				case (	(a[options.beginKey]==b[options.beginKey])&&
-						(a[options.endKey]==b[options.endKey]) ): console.log("Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-						break;
-				case (	(a[options.beginKey]==b[options.beginKey])&&
-						(a[options.beginKey]<b[options.endKey]) &&
-						(b[options.beginKey]<a[options.endKey])) : console.log("Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-						break;
-				case (	(a[options.beginKey]<b[options.beginKey])&&
-						(a[options.endKey]<b[options.endKey]) &&
-						(a[options.beginKey]<b[options.endKey]) &&
-						(b[options.beginKey]<a[options.endKey]) ): console.log("Collission between elements: ",i," and ",i+buffer.indexOf(b)+1);
-						break;
-				default: //console.log()
-				}
-				
-
-		});
-		i++;
-	}
-}
-
-
-
-//Преобразовать массив входных данных
-// в данные для построения диаграммы
-function remold(data){
-	//Фильтрация валидных данных
- return data.filter(element=>{
-	//console.log(data.indexOf(element));
-	if 	(!(
-			options.beginKey in element &&
-			"end" in element &&
-			typeof element[options.beginKey]==="number" &&
-			typeof element[options.endKey]==="number"
-		)) {
-			console.log("Error format for index "+data.indexOf(element));
-			return false;
-		}
-	if (element[options.beginKey]>element[options.endKey]) {
-		console.log("Error time data for index "+data.indexOf(element));
-		return false;
-	}
-		return true;
-	}).map(splitDays).flat().sort((a,b)=>{
-		return (a[options.beginKey]<b[options.beginKey])?-1:1;
-	});
-}
-
-
-
-// миллисекунды в градусы
-function msTodegree(ms){
-/*
-ms >=0
-ms <= 8640000
-*/
-return ms*(360/86400000);
-}
-
-//Взять время текущего дня в миллисекундах
-function getDatems(date){
-	return (date.getHours()*3600000)+(date.getMinutes()*60000)+(date.getSeconds()*1000)+(date.getMilliseconds());
-}
-
-function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-	var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
-
-	return {
-		x: centerX + (radius * Math.cos(angleInRadians)),
-		y: centerY + (radius * Math.sin(angleInRadians))
-	};
-}
-
-/*
-opts = {
-	cx              <-- center x
-	cy              <-- center y
-	radius          <-- circle radius
-	start_angle     <-- start angle in degrees
-	end_angle       <-- end angle in degrees
-};
-*/
-
-// arc
-a1=msTodegree(getDatems(new Date(TimeData[0].begin)));
-a2=msTodegree(getDatems(new Date(TimeData[0].end)));
-
-opts = {
-	cx: 300,
-	cy: 300,
-	radius: 200,
-	start_angle: a1,
-	end_angle: a2,
-	thickness: 60
-};
-
-start = polarToCartesian(opts.cx, opts.cy, opts.radius, opts.end_angle);
-end = polarToCartesian(opts.cx, opts.cy, opts.radius, opts.start_angle);
-largeArcFlag = opts.end_angle - opts.start_angle <= 180 ? "0" : "1";
-var title=(new Date(TimeData[0].begin)).toLocaleTimeString()+"\n"+(new Date(TimeData[0].end)).toLocaleTimeString();	
-var cutout_radius = opts.radius - opts.thickness,
-		start2 = polarToCartesian(opts.cx, opts.cy, cutout_radius, opts.end_angle),
-		end2 = polarToCartesian(opts.cx, opts.cy, cutout_radius, opts.start_angle),
-
-	
-
-d = [
-	"M", start.x, start.y,
-	"A", opts.radius, opts.radius, 0, largeArcFlag, 0, end.x, end.y,
-	"L", opts.cx, opts.cy,
-	"Z",
-	
-	"M", start2.x, start2.y,
-	"A", cutout_radius, cutout_radius, 0, largeArcFlag, 0, end2.x, end2.y,
-	"L", opts.cx, opts.cy,
-	"Z"
-].join(" ");
-//
-document.getElementById("arc").setAttribute("d", d);
-document.getElementById("arc").innerHTML="<title>"+title+"</title>";
-document.getElementById("arc_d_attr").innerHTML = d;
-</script>
+</html>
