@@ -157,6 +157,7 @@ function makePath(cx, cy, radius, start_angle, end_angle, thickness,label) {
     const path=document.createElementNS ("http://www.w3.org/2000/svg", "path");
     path.setAttribute("d", d);
     path.setAttribute("fill-rule", "evenodd");
+    path.setAttribute("fill-opacity", ".2");
     const title=document.createElementNS("http://www.w3.org/2000/svg","title");
     title.innerHTML=label;
     console.log(label);
