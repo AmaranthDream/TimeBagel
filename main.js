@@ -111,10 +111,27 @@ function createSVG(parentNodeName,data) {
   SVG.setAttribute("width", "400");
   SVG.setAttribute("height", "400");
   SVG.setAttribute("id", "some_svg");
+  
+  const outerCircle= document.createElementNS ("http://www.w3.org/2000/svg", "circle");
+  outerCircle.setAttribute("r",200);
+  outerCircle.setAttribute("cx",200);
+  outerCircle.setAttribute("cy",200);
+  outerCircle.setAttribute("fill","none");
+  outerCircle.setAttribute("stroke","black");
+  outerCircle.setAttribute("stroke-width",1);
+  SVG.appendChild(outerCircle);
+  const dataGroup=document.createElementNS ("http://www.w3.org/2000/svg", "g");
+  dataGroup.setAttribute("id","data");
   data[0][1].forEach((item,i,arr)=>{
-    SVG.appendChild(makePath(200,200,200,item.beginAngle,item.endAngle,60,item.beginLabel+"\n"+item.endLabel));
+    dataGroup.appendChild(makePath(200,200,200,item.beginAngle,item.endAngle,60,item.beginLabel+"\n"+item.endLabel));
   });
-
+  SVG.appendChild(dataGroup);
+  const innerCircle= document.createElementNS ("http://www.w3.org/2000/svg", "circle");
+  innerCircle.setAttribute("r",140);
+  innerCircle.setAttribute("cx",200);
+  innerCircle.setAttribute("cy",200);
+  innerCircle.setAttribute("fill","white");
+  SVG.appendChild(innerCircle);
   parent.appendChild(SVG);
 }
 
