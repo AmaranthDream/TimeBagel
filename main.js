@@ -111,7 +111,7 @@ function createSVG(parentNodeName,data) {
   SVG.setAttribute("width", "400");
   SVG.setAttribute("height", "400");
   SVG.setAttribute("id", "some_svg");
-  
+
   const outerCircle= document.createElementNS ("http://www.w3.org/2000/svg", "circle");
   outerCircle.setAttribute("r",200);
   outerCircle.setAttribute("cx",200);
@@ -126,6 +126,18 @@ function createSVG(parentNodeName,data) {
     dataGroup.appendChild(makePath(200,200,200,item.beginAngle,item.endAngle,60,item.beginLabel+"\n"+item.endLabel));
   });
   SVG.appendChild(dataGroup);
+
+  const clockFace=document.createElementNS ("http://www.w3.org/2000/svg", "g");
+  for (let i=0;i<24;i++){
+    let shirt=document.createElementNS ("http://www.w3.org/2000/svg", "line");
+    shirt.setAttribute("x1",polarToCartesian(200,200,140,i*15).x);
+    shirt.setAttribute("y1",polarToCartesian(200,200,140,i*15).y);
+    shirt.setAttribute("x2",polarToCartesian(200,200,200,i*15).x);
+    shirt.setAttribute("y2",polarToCartesian(200,200,200,i*15).y);
+    shirt.setAttribute("stroke","black");
+    clockFace.appendChild(shirt);
+  }
+  SVG.appendChild(clockFace);
   const innerCircle= document.createElementNS ("http://www.w3.org/2000/svg", "circle");
   innerCircle.setAttribute("r",140);
   innerCircle.setAttribute("cx",200);
@@ -157,7 +169,8 @@ function makePath(cx, cy, radius, start_angle, end_angle, thickness,label) {
     const path=document.createElementNS ("http://www.w3.org/2000/svg", "path");
     path.setAttribute("d", d);
     path.setAttribute("fill-rule", "evenodd");
-    path.setAttribute("fill-opacity", ".2");
+    path.setAttribute("fill-opacity", ".6");
+    path.setAttribute("fill", "green");
     const title=document.createElementNS("http://www.w3.org/2000/svg","title");
     title.innerHTML=label;
     console.log(label);
