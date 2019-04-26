@@ -104,46 +104,88 @@ function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
 
 //create SVG node
 function createSVG(parentNodeName,data) {
+  let i=0; //current page
+  const SVG = document.createElementNS ("http://www.w3.org/2000/svg", "svg");
+  const label=document.createElementNS ("http://www.w3.org/2000/svg", "text");
+  const outerCircle= document.createElementNS ("http://www.w3.org/2000/svg", "circle");
+  const dataGroup=document.createElementNS ("http://www.w3.org/2000/svg", "g");
+  const clockFace=document.createElementNS ("http://www.w3.org/2000/svg", "g");
+  const innerCircle= document.createElementNS ("http://www.w3.org/2000/svg", "circle");
+  const leftArrow= document.createElementNS ("http://www.w3.org/2000/svg", "circle");
+  const rightArrow= document.createElementNS ("http://www.w3.org/2000/svg", "circle");
+
+
+  function reDraw(parent,obj){
+    parent.innerHTML="";
+    console.log(obj);
+    obj[1].forEach((item,i,arr)=>{
+      parent.appendChild(makePath(200,200,200,item.beginAngle,item.endAngle,60,item.beginLabel+"\n"+item.endLabel));
+    });
+    label.innerHTML=obj[0];
+  }
   const parent = document.getElementById(parentNodeName);
   //ToDo Condition parent no null
-  const SVG = document.createElementNS ("http://www.w3.org/2000/svg", "svg");
+
   SVG.setAttribute("viewBox", "0 0 400 400");
   SVG.setAttribute("width", "400");
   SVG.setAttribute("height", "400");
   SVG.setAttribute("id", "some_svg");
 
-  const outerCircle= document.createElementNS ("http://www.w3.org/2000/svg", "circle");
+
   outerCircle.setAttribute("r",200);
   outerCircle.setAttribute("cx",200);
   outerCircle.setAttribute("cy",200);
   outerCircle.setAttribute("fill","none");
-  outerCircle.setAttribute("stroke","black");
-  outerCircle.setAttribute("stroke-width",1);
+  //outerCircle.setAttribute("stroke","black");
+  //outerCircle.setAttribute("stroke-width",1);
   SVG.appendChild(outerCircle);
-  const dataGroup=document.createElementNS ("http://www.w3.org/2000/svg", "g");
+
   dataGroup.setAttribute("id","data");
-  data[0][1].forEach((item,i,arr)=>{
-    dataGroup.appendChild(makePath(200,200,200,item.beginAngle,item.endAngle,60,item.beginLabel+"\n"+item.endLabel));
-  });
+  reDraw(dataGroup,data[0]);
   SVG.appendChild(dataGroup);
 
-  const clockFace=document.createElementNS ("http://www.w3.org/2000/svg", "g");
+
   for (let i=0;i<24;i++){
     let shirt=document.createElementNS ("http://www.w3.org/2000/svg", "line");
     shirt.setAttribute("x1",polarToCartesian(200,200,140,i*15).x);
     shirt.setAttribute("y1",polarToCartesian(200,200,140,i*15).y);
-    shirt.setAttribute("x2",polarToCartesian(200,200,200,i*15).x);
-    shirt.setAttribute("y2",polarToCartesian(200,200,200,i*15).y);
+    shirt.setAttribute("x2",polarToCartesian(200,200,180+(40*(!(i%6))),i*15).x);
+    shirt.setAttribute("y2",polarToCartesian(200,200,180+(40*(!(i%6))),i*15).y);
     shirt.setAttribute("stroke","black");
+    shirt.setAttribute("stroke-width",1+(!(i%6)));
     clockFace.appendChild(shirt);
   }
   SVG.appendChild(clockFace);
-  const innerCircle= document.createElementNS ("http://www.w3.org/2000/svg", "circle");
+
   innerCircle.setAttribute("r",140);
   innerCircle.setAttribute("cx",200);
   innerCircle.setAttribute("cy",200);
   innerCircle.setAttribute("fill","white");
   SVG.appendChild(innerCircle);
+
+
+  leftArrow.setAttribute("r",10);
+  leftArrow.setAttribute("cx",100);
+  leftArrow.setAttribute("cy",200);
+  leftArrow.setAttribute("fill","black");
+  leftArrow.addEventListener("click",onClick=(e)=>{(i==0)?i=0:i--;reDraw(dataGroup,data[i]);});
+
+  rightArrow.setAttribute("r",10);
+  rightArrow.setAttribute("cx",300);
+  rightArrow.setAttribute("cy",200);
+  rightArrow.setAttribute("fill","black");
+  rightArrow.addEventListener("click",onClick=(e)=>{(i==data.length-1)?i=data.length-1:i++;reDraw(dataGroup,data[i]);});
+  SVG.appendChild(leftArrow);
+  SVG.appendChild(rightArrow);
+
+
+  label.setAttribute("x",200);
+  label.setAttribute("y",200);
+  label.setAttribute("fill","black");
+  label.setAttribute("text-anchor","middle");
+  label.setAttribute("style","fill: red; font-size: 200%");
+  label.innerHTML=data[0][0];
+  SVG.appendChild(label);
   parent.appendChild(SVG);
 }
 
@@ -173,7 +215,7 @@ function makePath(cx, cy, radius, start_angle, end_angle, thickness,label) {
     path.setAttribute("fill", "green");
     const title=document.createElementNS("http://www.w3.org/2000/svg","title");
     title.innerHTML=label;
-    console.log(label);
+    //console.log(label);
     path.appendChild(title);
     return path;
 }
