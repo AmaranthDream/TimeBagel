@@ -2,7 +2,7 @@
 const options = {
   beginKey: "begin",
   endKey: "end",
-  radius: 100,
+  radius: 200,
   color: "#ffc007",
   showControl: true
 }
@@ -187,11 +187,11 @@ function createSVG(parentNodeName, data) {
 
   label.setAttribute("x", options.radius);
   label.setAttribute("y", options.radius);
-  label.setAttribute("dy", options.radius * 0.03);
+  label.setAttribute("dy", options.radius * 0.045);
   label.setAttribute("fill", "black");
   label.setAttribute("text-anchor", "middle");
   label.setAttribute("style", `fill: black;
-    font: bold ${options.radius*0.12}px sans-serif;
+    font: bold ${options.radius*0.18}px sans-serif;
     -moz-user-select: none;
     -ms-user-select: none;
     -khtml-user-select: none;
