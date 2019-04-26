@@ -3,7 +3,8 @@ const options = {
   beginKey: "begin",
   endKey: "end",
   radius: 100,
-  color: "#ffc007"
+  color: "#ffc007",
+  showControl: true
 }
 
 
@@ -113,8 +114,8 @@ function createSVG(parentNodeName, data) {
   const dataGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
   const clockFace = document.createElementNS("http://www.w3.org/2000/svg", "g");
   const innerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  const leftArrow = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  const rightArrow = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  const leftArrow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  const rightArrow = document.createElementNS("http://www.w3.org/2000/svg", "path");
   const shell = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 
   function reDraw(parent, obj) {
@@ -166,26 +167,23 @@ function createSVG(parentNodeName, data) {
   SVG.appendChild(innerCircle);
 
 
-  leftArrow.setAttribute("r", options.radius / 20);
-  leftArrow.setAttribute("cx", options.radius * 0.5);
-  leftArrow.setAttribute("cy", options.radius);
+  leftArrow.setAttribute("d", `M ${options.radius * 0.5} ${options.radius} v ${-options.radius/10} l ${-options.radius/10} ${options.radius/10} l ${options.radius/10} ${options.radius/10} `);
   leftArrow.setAttribute("fill", "black");
   leftArrow.addEventListener("click", onClick = (e) => {
     (i == 0) ? i = 0: i--;
     reDraw(dataGroup, data[i]);
   });
 
-  rightArrow.setAttribute("r", options.radius / 20);
-  rightArrow.setAttribute("cx", options.radius * 1.5);
-  rightArrow.setAttribute("cy", options.radius);
+  rightArrow.setAttribute("d", `M ${options.radius * 1.5} ${options.radius} v ${options.radius/10} l ${options.radius/10} ${-options.radius/10} l ${-options.radius/10} ${-options.radius/10} `);
   rightArrow.setAttribute("fill", "black");
   rightArrow.addEventListener("click", onClick = (e) => {
     (i == data.length - 1) ? i = data.length - 1: i++;
     reDraw(dataGroup, data[i]);
   });
-  SVG.appendChild(leftArrow);
-  SVG.appendChild(rightArrow);
-
+  if(options.showControl){
+    SVG.appendChild(leftArrow);
+    SVG.appendChild(rightArrow);
+  }
 
   label.setAttribute("x", options.radius);
   label.setAttribute("y", options.radius);
