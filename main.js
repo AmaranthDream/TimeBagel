@@ -2,7 +2,7 @@
 const options = {
   beginKey: "begin",
   endKey: "end",
-  radius: 200,
+  radius: 100,
   color: "#ffc007",
   showControl: true
 }
@@ -197,16 +197,32 @@ function createTimeBagel(parentNodeName, raw) {
   leftArrow.setAttribute("d", `M ${options.radius * 0.5} ${options.radius} v ${-options.radius/10} l ${-options.radius/10} ${options.radius/10} l ${options.radius/10} ${options.radius/10} `);
   leftArrow.setAttribute("fill", "black");
   leftArrow.addEventListener("click", onClick = (e) => {
-    (i == 0) ? i = 0: i--;
+    i--;
+    if(i <= 0){
+      leftArrow.setAttribute("visibility", "hidden");
+
+      i=0;
+    }else{
+      rightArrow.setAttribute("visibility", "visible");
+    }
     reDraw(dataGroup, data[i]);
   });
 
   rightArrow.setAttribute("d", `M ${options.radius * 1.5} ${options.radius} v ${options.radius/10} l ${options.radius/10} ${-options.radius/10} l ${-options.radius/10} ${-options.radius/10} `);
   rightArrow.setAttribute("fill", "black");
   rightArrow.addEventListener("click", onClick = (e) => {
-    (i == data.length - 1) ? i = data.length - 1: i++;
+    i++;
+    if(i >= data.length - 1){
+      i = data.length - 1;
+      rightArrow.setAttribute("visibility", "hidden");
+    }else{
+      leftArrow.setAttribute("visibility", "visible");
+    }
     reDraw(dataGroup, data[i]);
   });
+
+  (i == 0)?leftArrow.setAttribute("visibility", "hidden"):void(0);
+  (i == data.length - 1)?rightArrow.setAttribute("visibility", "hidden"):void(0);
   if (options.showControl) {
     SVG.appendChild(leftArrow);
     SVG.appendChild(rightArrow);
