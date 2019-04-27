@@ -24,9 +24,7 @@
     for(let i=0;i<20;i++){
     	randomDateArray.push({"begin":bufDate.setMilliseconds(Math.round(Math.random()*28800000)),"end":bufDate.setMilliseconds(Math.round(Math.random()*2880000))});
     }
-    console.log(randomDateArray);
-    console.log(remold(randomDateArray));
-    createSVG("node",remold(randomDateArray));
+    createSVG("node",randomDateArray);
   </script>
 </body>
 

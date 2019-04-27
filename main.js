@@ -8,38 +8,7 @@ const options = {
 }
 
 
-///Returns data for build diagrams divided by days
-function splitDays(obj) {
-  const beginDate = new Date(obj[options.beginKey]);
-  const endDate = new Date(obj[options.endKey]);
-  const dateToDegree = (date) => {
-    return Date.parse("Thu Jan 01 1970 " + date.toLocaleTimeString() + " GMT+0000") * (360 / 86400000)
-  }
-  if (beginDate.toDateString() == endDate.toDateString()) {
-    return [{
-      group: beginDate.toLocaleDateString(),
-      beginAngle: dateToDegree(beginDate),
-      beginLabel: beginDate.toLocaleTimeString(),
-      endAngle: dateToDegree(endDate),
-      endLabel: endDate.toLocaleTimeString()
-    }]
-  } else {
-    const tempEndDate = new Date(beginDate);
-    tempEndDate.setHours(23, 59, 59, 999);
-    return [{
-        group: beginDate.toLocaleDateString(),
-        beginAngle: dateToDegree(beginDate),
-        beginLabel: beginDate.toLocaleTimeString(),
-        endAngle: dateToDegree(tempEndDate),
-        endLabel: tempEndDate.toLocaleTimeString()
-      },
-      splitDays({
-        [`${options.beginKey}`]: parseInt(`${tempEndDate.getTime()+1}`),
-        [`${options.endKey}`]: parseInt(`${obj[options.endKey]}`)
-      })
-    ].flat();
-  }
-}
+
 
 ///Test Array and detect collision by Combination of two.
 function detectCollision(data) {
@@ -55,58 +24,116 @@ function detectCollision(data) {
   }
 }
 
-///Checking element for errors
-function errorChecking(element) {
-  if (!(
-      options.beginKey in element &&
-      options.endKey in element &&
-      typeof element[options.beginKey] === "number" &&
-      typeof element[options.endKey] === "number"
-    )) {
-    console.log("Error format for " + element);
-    return false;
-  }
-  if (element[options.beginKey] > element[options.endKey]) {
-    console.log("Error time data for " + element);
-    return false;
-  }
-  return true;
-}
-
-///Group array by "group".
-function group(rv, x) {
-  (rv[x["group"]] = rv[x["group"]] || []).push(x);
-  delete x["group"];
-  return rv;
-}
-
-///compareFunction for sorting
-function compareDates(a, b) {
-  function parseDate(str) {
-    let parts = str.match(/(\d+)/g);
-    return parseInt(parts[2] + parts[1] + parts[0]);
-  }
-  return parseDate(a[0]) - parseDate(b[0])
-}
-
-///Transform raw data and returns data to build diagrams.
-function remold(data) {
-  return Object.entries(
-    data.filter(errorChecking).map(splitDays).flat().reduce(group, [])).
-  sort(compareDates);
-}
-
-function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-  var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
-
-  return {
-    x: centerX + (radius * Math.cos(angleInRadians)),
-    y: centerY + (radius * Math.sin(angleInRadians))
-  };
-}
-
 //create SVG node
-function createSVG(parentNodeName, data) {
+function createSVG(parentNodeName, raw) {
+  ///Transform raw data and returns data to build diagrams.
+  function remold(data) {
+    ///Returns data for build diagrams divided by days
+    function splitDays(obj) {
+      const beginDate = new Date(obj[options.beginKey]);
+      const endDate = new Date(obj[options.endKey]);
+      const dateToDegree = (date) => {
+        return Date.parse("Thu Jan 01 1970 " + date.toLocaleTimeString() + " GMT+0000") * (360 / 86400000)
+      }
+      if (beginDate.toDateString() == endDate.toDateString()) {
+        return [{
+          group: beginDate.toLocaleDateString(),
+          beginAngle: dateToDegree(beginDate),
+          beginLabel: beginDate.toLocaleTimeString(),
+          endAngle: dateToDegree(endDate),
+          endLabel: endDate.toLocaleTimeString()
+        }]
+      } else {
+        const tempEndDate = new Date(beginDate);
+        tempEndDate.setHours(23, 59, 59, 999);
+        return [{
+            group: beginDate.toLocaleDateString(),
+            beginAngle: dateToDegree(beginDate),
+            beginLabel: beginDate.toLocaleTimeString(),
+            endAngle: dateToDegree(tempEndDate),
+            endLabel: tempEndDate.toLocaleTimeString()
+          },
+          splitDays({
+            [`${options.beginKey}`]: parseInt(`${tempEndDate.getTime()+1}`),
+            [`${options.endKey}`]: parseInt(`${obj[options.endKey]}`)
+          })
+        ].flat();
+      }
+    }
+    ///Checking element for errors
+    function errorChecking(element) {
+      if (!(
+          options.beginKey in element &&
+          options.endKey in element &&
+          typeof element[options.beginKey] === "number" &&
+          typeof element[options.endKey] === "number"
+        )) {
+        console.log("Error format for " + element);
+        return false;
+      }
+      if (element[options.beginKey] > element[options.endKey]) {
+        console.log("Error time data for " + element);
+        return false;
+      }
+      return true;
+    }
+    ///Group array by "group".
+    function group(rv, x) {
+      (rv[x["group"]] = rv[x["group"]] || []).push(x);
+      delete x["group"];
+      return rv;
+    }
+    ///compareFunction for sorting
+    function compareDates(a, b) {
+      function parseDate(str) {
+        let parts = str.match(/(\d+)/g);
+        return parseInt(parts[2] + parts[1] + parts[0]);
+      }
+      return parseDate(a[0]) - parseDate(b[0])
+    }
+    return Object.entries(
+      data.filter(errorChecking).map(splitDays).flat().reduce(group, [])).
+    sort(compareDates);
+  }
+  ///Converts polar coordinates to cartesian
+  function polarToCartesian(ox, oy, r, Phi) {
+    return {
+      x: ox + (r * Math.cos((Phi - 90) * Math.PI / 180.0)),
+      y: oy + (r * Math.sin((Phi - 90) * Math.PI / 180.0))
+    };
+  }
+  ///Returns SVG path
+  function makePath(cx, cy, radius, startAngle, endAngle, thickness, label) {
+    const start = polarToCartesian(cx, cy, radius, endAngle);
+    const end = polarToCartesian(cx, cy, radius, startAngle);
+    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+    //var title=(new Date(TimeData[0].begin)).toLocaleTimeString()+"\n"+(new Date(TimeData[0].end)).toLocaleTimeString();
+    const cutoutRadius = radius - thickness,
+      start2 = polarToCartesian(cx, cy, cutoutRadius, endAngle),
+      end2 = polarToCartesian(cx, cy, cutoutRadius, startAngle),
+      d = [
+        "M", start.x, start.y,
+        "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y,
+        "L", cx, cy,
+        "Z",
+
+        "M", start2.x, start2.y,
+        "A", cutoutRadius, cutoutRadius, 0, largeArcFlag, 0, end2.x, end2.y,
+        "L", cx, cy,
+        "Z"
+      ].join(" ");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", d);
+    path.setAttribute("fill-rule", "evenodd");
+    path.setAttribute("fill-opacity", ".85");
+    path.setAttribute("fill", options.color);
+    const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+    title.innerHTML = label;
+    path.appendChild(title);
+    return path;
+  }
+
+  const data=remold(raw);
   let i = 0; //current page
   const SVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -180,7 +207,7 @@ function createSVG(parentNodeName, data) {
     (i == data.length - 1) ? i = data.length - 1: i++;
     reDraw(dataGroup, data[i]);
   });
-  if(options.showControl){
+  if (options.showControl) {
     SVG.appendChild(leftArrow);
     SVG.appendChild(rightArrow);
   }
@@ -202,36 +229,4 @@ function createSVG(parentNodeName, data) {
 
 
   parent.appendChild(SVG);
-}
-
-///Returns SVG path
-function makePath(cx, cy, radius, start_angle, end_angle, thickness, label) {
-  const start = polarToCartesian(cx, cy, radius, end_angle);
-  const end = polarToCartesian(cx, cy, radius, start_angle);
-  const largeArcFlag = end_angle - start_angle <= 180 ? "0" : "1";
-  //var title=(new Date(TimeData[0].begin)).toLocaleTimeString()+"\n"+(new Date(TimeData[0].end)).toLocaleTimeString();
-  const cutout_radius = radius - thickness,
-    start2 = polarToCartesian(cx, cy, cutout_radius, end_angle),
-    end2 = polarToCartesian(cx, cy, cutout_radius, start_angle),
-    d = [
-      "M", start.x, start.y,
-      "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y,
-      "L", cx, cy,
-      "Z",
-
-      "M", start2.x, start2.y,
-      "A", cutout_radius, cutout_radius, 0, largeArcFlag, 0, end2.x, end2.y,
-      "L", cx, cy,
-      "Z"
-    ].join(" ");
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path.setAttribute("d", d);
-  path.setAttribute("fill-rule", "evenodd");
-  path.setAttribute("fill-opacity", ".85");
-  path.setAttribute("fill", options.color);
-  const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-  title.innerHTML = label;
-  //console.log(label);
-  path.appendChild(title);
-  return path;
 }
