@@ -24,8 +24,8 @@ function detectCollision(data) {
   }
 }
 
-//create SVG node
-function createSVG(parentNodeName, raw) {
+//create Time Bagel frow raw array in parentNodeName node.
+function createTimeBagel(parentNodeName, raw) {
   ///Transform raw data and returns data to build diagrams.
   function remold(data) {
     ///Returns data for build diagrams divided by days

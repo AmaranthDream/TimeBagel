@@ -17,14 +17,17 @@
 <body>
 
   <div id="node">
+
   </div>
+  <div id="node2">
   <script type="text/javascript">
     const randomDateArray=[];
     const bufDate=new Date();
     for(let i=0;i<20;i++){
     	randomDateArray.push({"begin":bufDate.setMilliseconds(Math.round(Math.random()*28800000)),"end":bufDate.setMilliseconds(Math.round(Math.random()*2880000))});
     }
-    createSVG("node",randomDateArray);
+    createTimeBagel("node",randomDateArray);
+    createTimeBagel("node",randomDateArray);
   </script>
 </body>
 
