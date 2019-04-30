@@ -2,7 +2,7 @@
 const options = {
   beginKey: "begin",
   endKey: "end",
-  radius: 100,
+  radius: 50,
   color: "#ffc007",
   showControl: true
 }
@@ -166,8 +166,8 @@ function createTimeBagel(parentNodeName, raw) {
   outerCircle.setAttribute("cy", options.radius);
   outerCircle.setAttribute("fill", "none");
 
-  //outerCircle.setAttribute("stroke","black");
-  //outerCircle.setAttribute("stroke-width",1);
+  outerCircle.setAttribute("stroke","black");
+  outerCircle.setAttribute("stroke-width",.1);
   SVG.appendChild(outerCircle);
 
   dataGroup.setAttribute("id", "data");
@@ -177,10 +177,10 @@ function createTimeBagel(parentNodeName, raw) {
 
   for (let i = 0; i < 24; i++) {
     let shirt = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    shirt.setAttribute("x1", polarToCartesian(options.radius, options.radius, options.radius * 0.7, i * 15).x);
-    shirt.setAttribute("y1", polarToCartesian(options.radius, options.radius, options.radius * 0.7, i * 15).y);
-    shirt.setAttribute("x2", polarToCartesian(options.radius, options.radius, options.radius * 0.9 + (options.radius * 0.2 * (!(i % 6))), i * 15).x);
-    shirt.setAttribute("y2", polarToCartesian(options.radius, options.radius, options.radius * 0.9 + (options.radius * 0.2 * (!(i % 6))), i * 15).y);
+    shirt.setAttribute("x1", polarToCartesian(options.radius, options.radius, options.radius * 0.7 + (options.radius*0.1*!!(i % 6)) , i * 15).x);
+    shirt.setAttribute("y1", polarToCartesian(options.radius, options.radius, options.radius * 0.7 + (options.radius*0.1*!!(i % 6)), i * 15).y);
+    shirt.setAttribute("x2", polarToCartesian(options.radius, options.radius, options.radius,i*15).x);// * 0.9 + (options.radius * 0.2 * (!(i % 6))), i * 15).x);
+    shirt.setAttribute("y2", polarToCartesian(options.radius, options.radius, options.radius,i*15).y);// * 0.9 + (options.radius * 0.2 * (!(i % 6))), i * 15).y);
     shirt.setAttribute("stroke", "black");
     shirt.setAttribute("stroke-width", options.radius * 0.005 + (options.radius * 0.005 * (!(i % 6))));
     clockFace.appendChild(shirt);
