@@ -28,8 +28,9 @@
     	randomDateArray.push({"begin":bufDate.setMilliseconds(Math.round(Math.random()*28800000)),"end":bufDate.setMilliseconds(Math.round(Math.random()*2880000))});
     	randomDateArray2.push({"begin":bufDate.setMilliseconds(Math.round(Math.random()*28800000)),"end":bufDate.setMilliseconds(Math.round(Math.random()*2880000))});
     }
-  //  bagel.createTimeBagel("node",randomDateArray);
-    createTimeBagel("node",randomDateArray);
+    bagel=new TimeBagel();
+    bagel.createTimeBagel("node",randomDateArray);
+    //createTimeBagel("node",randomDateArray);
   //  createTimeBagel("node",randomDateArray);
   </script>
 </body>
