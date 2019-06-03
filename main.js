@@ -11,7 +11,7 @@ const options = {
 
 
 ///Test Array and detect collision by Combination of two.
-function detectCollision(data) {
+detectCollision=(data)=>{
   let buffer = data.slice();
   let A;
   let i = 0;
@@ -25,7 +25,7 @@ function detectCollision(data) {
 }
 
 ///Returns data for build diagrams divided by days
-function splitDays(obj) {
+splitDays=(obj)=>{
   const beginDate = new Date(obj[options.beginKey]);
   const endDate = new Date(obj[options.endKey]);
   const dateToDegree = (date) => {
@@ -57,7 +57,7 @@ function splitDays(obj) {
   }
 }
 ///Checking element for errors
-function errorChecking(element) {
+errorChecking=(element)=>{
   if (!(
       options.beginKey in element &&
       options.endKey in element &&
@@ -74,13 +74,13 @@ function errorChecking(element) {
   return true;
 }
 ///Group array by "group".
-function group(rv, x) {
+group=(rv, x)=>{
   (rv[x["group"]] = rv[x["group"]] || []).push(x);
   delete x["group"];
   return rv;
 }
 ///compareFunction for sorting
-function compareDates(a, b) {
+compareDates=(a, b)=>{
   function parseDate(str) {
     let parts = str.match(/(\d+)/g);
     return parseInt(parts[2] + parts[1] + parts[0]);
@@ -88,20 +88,20 @@ function compareDates(a, b) {
   return parseDate(a[0]) - parseDate(b[0])
 }
 ///Transform raw data and returns data to build diagrams.
-function remold(data) {
+remold=(data)=>{
   return Object.entries(
     data.filter(errorChecking).map(splitDays).flat().reduce(group, [])).
   sort(compareDates);
 }
 ///Converts polar coordinates to cartesian
-function polarToCartesian(ox, oy, r, Phi) {
+polarToCartesian=(ox, oy, r, Phi)=>{
   return {
     x: ox + (r * Math.cos((Phi - 90) * Math.PI / 180.0)),
     y: oy + (r * Math.sin((Phi - 90) * Math.PI / 180.0))
   };
 }
 ///Returns SVG path
-function makePath(cx, cy, radius, startAngle, endAngle, thickness, label) {
+makePath=(cx, cy, radius, startAngle, endAngle, thickness, label)=>{
   const start = polarToCartesian(cx, cy, radius, endAngle);
   const end = polarToCartesian(cx, cy, radius, startAngle);
   const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
@@ -132,7 +132,7 @@ function makePath(cx, cy, radius, startAngle, endAngle, thickness, label) {
 }
 
 //create Time Bagel frow raw array in parentNodeName node.
-function createTimeBagel(parentNodeName, raw) {
+createTimeBagel=(parentNodeName, raw)=>{
 
 
   const data = remold(raw);
